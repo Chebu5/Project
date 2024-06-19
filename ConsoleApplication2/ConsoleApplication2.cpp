@@ -21,7 +21,7 @@ int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     std::unordered_map<std::string, std::string> hashes;
-    std::string directory_path = "D:\\ConsoleApplication2\\ConsoleApplication2\\Папка1";
+    std::string directory_path = "D:\\Код для Vs\\ConsoleApplication2\\ConsoleApplication2\\Папка1";
 
     for (const auto& entry : fs::recursive_directory_iterator(directory_path)) {
         if (fs::is_regular_file(entry.status())) {
