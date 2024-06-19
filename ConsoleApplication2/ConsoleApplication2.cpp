@@ -39,10 +39,10 @@ int main() {
             for (const auto& path : paths) {
                 std::cout << path << '\n';
             }
-            std::cout << "Удалить эти файлы? (y/n): ";
-            char choice;
+            std::cout << "Удалить эти файлы? (Да/Нет): ";
+            string choice;
             std::cin >> choice;
-            if (choice == 'y' || choice == 'Y') {
+            if (choice == "Да" || choice == "да"|| choice=="ДА") {
                 for (const auto& path : paths) {
                     fs::remove(path);
                     std::cout << "Удален файл: " << path << '\n';
