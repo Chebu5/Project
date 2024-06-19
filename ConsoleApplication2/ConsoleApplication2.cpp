@@ -1,14 +1,14 @@
 ﻿#include <iostream>
 #include <filesystem>
 #include <unordered_map>
-#include <vector>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <stdio.h>
-#include <windows.h>
-using namespace std;
+#include <vector>
+#include <Windows.h>
+
 namespace fs = std::filesystem;
+using namespace std;
 std::string file_hash(const std::string& path) {
     std::ifstream file(path, std::ios::binary);
     std::stringstream buffer;
@@ -17,33 +17,39 @@ std::string file_hash(const std::string& path) {
 }
 
 int main() {
-    string director_path;
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    std::unordered_map<std::string, std::string> hashes;
-    std::string directory_path = "D:\\Код для Vs\\ConsoleApplication2\\ConsoleApplication2\\Папка1";
+    std::unordered_map<std::string, std::vector<std::string>> hashes;
+    std::string directory_path;
+    std::cout << "Введите путь к директории: ";
+    getline(cin,directory_path);
 
     for (const auto& entry : fs::recursive_directory_iterator(directory_path)) {
         if (fs::is_regular_file(entry.status())) {
             std::string file_path = entry.path().string();
             std::string hash = file_hash(file_path);
 
-            if (hashes.find(hash) != hashes.end()) {
-                std::cout << "Найдены дубликаты: " << endl << "1." << file_path << endl << " и " << endl << "2." << hashes[hash] << std::endl;
-                cout << "Введите путь к файлу который хотите удалить: ";
-                getline(cin, director_path);
-                if (fs::remove(director_path) != 0)
-                    cout << "Файл успешно удалён" << endl;
-                else
-                    cout << "Ошибка удаления файла" << endl;
+            hashes[hash].push_back(file_path);
+        }
+    }
 
+    for (const auto& [hash, paths] : hashes) {
+        if (paths.size() > 1) {
+            std::cout << "Найдены дубликаты:\n";
+            for (const auto& path : paths) {
+                std::cout << path << '\n';
             }
-            else {
-                hashes[hash] = file_path;
+            std::cout << "Удалить эти файлы? (y/n): ";
+            char choice;
+            std::cin >> choice;
+            if (choice == 'y' || choice == 'Y') {
+                for (const auto& path : paths) {
+                    fs::remove(path);
+                    std::cout << "Удален файл: " << path << '\n';
+                }
             }
         }
     }
 
     return 0;
-
 }
