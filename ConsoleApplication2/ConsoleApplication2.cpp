@@ -5,23 +5,19 @@
 #include <fstream>
 #include <string>
 #include<Windows.h>
-// Простой алгоритм хеширования для демонстрации
 std::size_t simpleHash(const std::string& data) {
     std::size_t hashValue = 0;
     for (char c : data) {
         hashValue = c + (hashValue << 6) + (hashValue << 16) - hashValue;
     }
-    std::cout << hashValue <<std::endl;
     return hashValue;
 }
-
 // Функция для чтения содержимого файла
 std::string readFile(const std::filesystem::path& path) {
     std::ifstream file(path, std::ios::binary);
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     return content;
 }
-
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
@@ -51,11 +47,12 @@ int main() {
 
             // Запрос на удаление файла
             std::string input;
-            std::cout << "Введите путь к файлу для удаления или '0' для пропуска: ";
-            std::cin >> input;
-            if (input != "0") {
+            while (input != "0") {
+                std::cout << "Введите путь к файлу для удаления или '0' для пропуска: ";
+                std::cin >> input;
                 std::filesystem::remove(input);
                 std::cout << "Файл удален: " << input << '\n';
+                
             }
         }
     }
