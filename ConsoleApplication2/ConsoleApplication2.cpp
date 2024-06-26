@@ -5,13 +5,12 @@
 #include <fstream>
 #include <string>
 #include<Windows.h>
-// Простой алгоритм хеширования для демонстрации
+
 std::size_t simpleHash(const std::string& data) {
     std::size_t hashValue = 0;
     for (char c : data) {
         hashValue = c + (hashValue << 6) + (hashValue << 16) - hashValue;
     }
-    std::cout << hashValue <<std::endl;
     return hashValue;
 }
 
@@ -27,38 +26,46 @@ int main() {
     SetConsoleOutputCP(1251);
     std::unordered_map<std::size_t, std::vector<std::filesystem::path>> filesMap;
     std::string directoryPath;
-
-    // Получение пути к директории от пользователя
     std::cout << "Введите путь к директории: ";
-    std::getline(std::cin,directoryPath);
-
-    // Поиск файлов и заполнение хеш-таблицы
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath)) {
-        if (entry.is_regular_file()) {
-            std::string content = readFile(entry.path());
-            std::size_t hashValue = simpleHash(content);
-            filesMap[hashValue].push_back(entry.path());
-        }
-    }
-
-    // Поиск и вывод дубликатов
-    for (const auto& [hash, paths] : filesMap) {
-        if (paths.size() > 1) {
-            std::cout << "Найдены дубликаты с хешем " << hash << ":\n";
-            for (const auto& path : paths) {
-                std::cout<< path << '\n';
-            }
-
-            // Запрос на удаление файла
-            std::string input;
-            std::cout << "Введите путь к файлу для удаления или '0' для пропуска: ";
-            std::cin >> input;
-            if (input != "0") {
-                std::filesystem::remove(input);
-                std::cout << "Файл удален: " << input << '\n';
+    std::getline(std::cin, directoryPath);
+    if (std::filesystem::exists(directoryPath)) {
+        // Поиск файлов и заполнение хеш-таблицы
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath)) {
+            if (entry.is_regular_file()) {
+                std::string content = readFile(entry.path());
+                std::size_t hashValue = simpleHash(content);
+                filesMap[hashValue].push_back(entry.path());
             }
         }
+
+        for (const auto& [hash, paths] : filesMap) {
+            if (paths.size() > 1) {
+                std::cout << "Найдены дубликаты:\n";
+                for (size_t i = 0; i < paths.size(); ++i) {
+                    std::cout << i + 1 << ": " << paths[i] << '\n';
+                }
+                int choice=-3;
+                std::cout << "Введите номер файла для удаления или 0 для пропуска: ";
+                std::cin >> choice;
+                while (choice != 0) {
+                    if (choice <= paths.size()) {
+                        if (std::filesystem::exists(paths[choice - 1])) {
+                            std::filesystem::remove(paths[choice - 1]);
+                            std::cout << "Удален файл: " << paths[choice - 1] << '\n';
+                        }
+                        else
+                            std::cout << "Данного файла не существует" << std::endl;
+                    }
+                    else
+                        std::cout << "Данного файла не существует" << std::endl;
+                    std::cout << "Введите номер файла для удаления или 0 для пропуска: ";
+                    std::cin >> choice;
+                }
+            }
+        }
     }
+    else
+        std::cout << "Данной папки не существует" << std::endl;
 
     return 0;
 }
