@@ -5,7 +5,6 @@
 #include <fstream>
 #include <string>
 #include<Windows.h>
-
 std::size_t simpleHash(const std::string& data) {
     std::size_t hashValue = 0;
     for (char c : data) {
@@ -13,14 +12,12 @@ std::size_t simpleHash(const std::string& data) {
     }
     return hashValue;
 }
-
 // Функция для чтения содержимого файла
 std::string readFile(const std::filesystem::path& path) {
     std::ifstream file(path, std::ios::binary);
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     return content;
 }
-
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
